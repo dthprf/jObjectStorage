@@ -10,6 +10,10 @@ import java.net.Socket;
 public class RemoteClient {
     private String IP;
     private int socket;
+    private final static String getMethod = "GET";
+    private final static String putMethod = "PUT";
+    private final static String deleteMethod = "DELETE";
+
 
     public RemoteClient(String IP, int socket) {
         this.socket = socket;
@@ -18,7 +22,7 @@ public class RemoteClient {
 
 
     public void addObject(String key, Object object) throws IOException {
-        RequestModel transferObject = new RequestModel(key, object);
+        RequestModel transferObject = new RequestModel(key, object, putMethod);
 
         Socket socket = new Socket(this.IP, this.socket);
 
