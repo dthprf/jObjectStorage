@@ -46,8 +46,9 @@ public class WorkerRunnable implements Runnable{
 
     private Object deserilize(Socket clientSocket) {
         try{
-            return new ObjectInputStream(clientSocket.getInputStream());
-        } catch (IOException e) {
+            ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+            return objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
