@@ -9,14 +9,14 @@ import java.net.Socket;
 
 public class RemoteClient {
     private String IP;
-    private int socket;
+    private int port;
     private final static String getMethod = "GET";
     private final static String putMethod = "PUT";
     private final static String deleteMethod = "DELETE";
 
 
-    public RemoteClient(String IP, int socket) {
-        this.socket = socket;
+    public RemoteClient(String IP, int port) {
+        this.port = port;
         this.IP = IP;
     }
 
@@ -24,7 +24,7 @@ public class RemoteClient {
     public void addObject(String key, Object object) throws IOException {
         RequestModel transferObject = new RequestModel(key, object, putMethod);
 
-        Socket socket = new Socket(this.IP, this.socket);
+        Socket socket = new Socket(this.IP, this.port);
 
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectOutputStream.writeObject(transferObject);
@@ -35,7 +35,7 @@ public class RemoteClient {
 
 
     public Object getObject(String key) throws IOException, ClassNotFoundException {
-        Socket socket = new Socket(this.IP, this.socket);
+        Socket socket = new Socket(this.IP, this.port);
         ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectOutputStream.writeObject(key);
