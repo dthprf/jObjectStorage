@@ -1,24 +1,29 @@
-package com.codecool;
+package remoteObjectsStorage.Server;
+
+import remoteObjectsStorage.RequestHandler.RequestHandler;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MTServer implements Runnable{
 
-    protected int          serverPort   = 8080;
-    protected ServerSocket serverSocket = null;
-    protected boolean      isStopped    = false;
-    protected Thread       runningThread= null;
+    private int serverPort   = 8080;
+    private ServerSocket serverSocket = null;
+    private boolean isStopped    = false;
+//    private Thread runningThread= null;
+    private ConcurrentHashMap<String, Object> database;
 
     public MTServer(int port){
         this.serverPort = port;
+        this.database = new ConcurrentHashMap<>();
     }
 
     public void run(){
-        synchronized(this){
-            this.runningThread = Thread.currentThread();
-        }
+//        synchronized(this){
+//            Thread runningThread = Thread.currentThread();
+//        }
         openServerSocket();
         while(! isStopped()){
             Socket clientSocket = null;
@@ -32,9 +37,12 @@ public class MTServer implements Runnable{
                 throw new RuntimeException(
                         "Error accepting client connection", e);
             }
+
+            RequestHandler requestHandler = new RequestHandler(this, clientSocket);
+
             new Thread(
                     new WorkerRunnable(
-                            clientSocket, "Multithreaded Server")
+                            clientSocket, requestHandler)
             ).start();
         }
         System.out.println("Server Stopped.") ;
@@ -44,6 +52,35 @@ public class MTServer implements Runnable{
     private synchronized boolean isStopped() {
         return this.isStopped;
     }
+
+    public synchronized boolean addObject(String key, Object value) {
+        if(!database.containsKey(key)) {
+            this.database.put(key, value);
+            return true;
+        }
+
+        return false;
+    }
+
+    public synchronized Object getObject(String key) {
+
+        Object object = this.database.get(key);
+
+        if(object == null) {
+            throw new IllegalArgumentException("There is no object connected to key");
+        }
+       return object;
+    }
+
+    public synchronized boolean removeObject(String key) {
+        if(this.database.containsKey(key)) {
+            this.database.remove(key);
+            return true;
+        }
+
+        return false;
+    }
+
 
     public synchronized void stop(){
         this.isStopped = true;
