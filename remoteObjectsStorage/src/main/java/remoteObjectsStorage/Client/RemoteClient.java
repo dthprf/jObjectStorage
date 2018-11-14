@@ -1,13 +1,11 @@
 package remoteObjectsStorage.Client;
 
-import remoteObjectsStorage.Model.TransferObject;
+import remoteObjectsStorage.Model.RequestModel;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketOption;
-import java.net.UnknownHostException;
 
 public class RemoteClient {
     private String IP;
@@ -20,7 +18,7 @@ public class RemoteClient {
 
 
     public void addObject(String key, Object object) throws IOException {
-        TransferObject transferObject = new TransferObject(key, object);
+        RequestModel transferObject = new RequestModel(key, object);
 
         Socket socket = new Socket(this.IP, this.socket);
 
