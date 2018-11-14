@@ -21,7 +21,7 @@ public class RemoteClient {
     }
 
 
-    public void addObject(String key, Object object) throws IOException {
+    public void addObject(String key, Object object) throws IOException, ClassNotFoundException {
         RequestModel transferObject = new RequestModel(key, object, putMethod);
 
         Socket socket = new Socket(this.IP, this.port);
@@ -29,8 +29,14 @@ public class RemoteClient {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectOutputStream.writeObject(transferObject);
 
+        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+        Object requested = objectInputStream.readObject();
+
+        System.out.println((boolean) requested);
+
         objectOutputStream.flush();
         objectOutputStream.close();
+        objectInputStream.close();
     }
 
 
@@ -50,4 +56,6 @@ public class RemoteClient {
         return requested;
 
     }
+
+
 }
