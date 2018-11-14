@@ -1,21 +1,22 @@
-package com.codecool;
+package remoteObjectsStorage.Server;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import remoteObjectsStorage.Model.RequestModel;
+import remoteObjectsStorage.RequestHandler.RequestHandler;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
-/**
-
- */
 public class WorkerRunnable implements Runnable{
 
-    protected Socket clientSocket = null;
-    protected String serverText   = null;
+    private Socket clientSocket;
+    private RequestHandler requestHandler;
 
-    public WorkerRunnable(Socket clientSocket, String serverText) {
+    WorkerRunnable(Socket clientSocket, RequestHandler requestHandler) {
         this.clientSocket = clientSocket;
-        this.serverText   = serverText;
+        this.requestHandler = requestHandler;
     }
 
     public void run() {
@@ -23,16 +24,32 @@ public class WorkerRunnable implements Runnable{
             InputStream input  = clientSocket.getInputStream();
             OutputStream output = clientSocket.getOutputStream();
             long time = System.currentTimeMillis();
-            output.write(("HTTP/1.1 200 OK\n\nWorkerRunnable: " +
-                    this.serverText + " - " +
-                    time +
-                    "").getBytes());
+
+            Object object = deserilize(clientSocket);
+            RequestModel requestModel;
+
+            if(object != null) {
+                requestModel = (RequestModel) object;
+                requestHandler.handleRequest(requestModel);
+            }
+
             output.close();
             input.close();
             System.out.println("Request processed: " + time);
         } catch (IOException e) {
             //report exception somewhere.
             e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.toString() + "\n" + "Only Serializable objects allowed.");
         }
+    }
+
+    private Object deserilize(Socket clientSocket) {
+        try{
+            return new ObjectInputStream(clientSocket.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
