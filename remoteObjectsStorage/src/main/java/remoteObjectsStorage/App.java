@@ -23,7 +23,7 @@ public class App {
 
             try {
                 remoteClient1.addObject("bart", string);
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
 
