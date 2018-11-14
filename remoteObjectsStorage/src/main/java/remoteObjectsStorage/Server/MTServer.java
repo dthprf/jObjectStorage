@@ -9,10 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MTServer implements Runnable{
 
-    private int serverPort   = 8080;
+    private int serverPort;
     private ServerSocket serverSocket = null;
-    private boolean isStopped    = false;
-//    private Thread runningThread= null;
+    private boolean isStopped = false;
     private ConcurrentHashMap<String, Object> database;
 
     public MTServer(int port){
@@ -21,9 +20,6 @@ public class MTServer implements Runnable{
     }
 
     public void run(){
-//        synchronized(this){
-//            Thread runningThread = Thread.currentThread();
-//        }
         openServerSocket();
         while(! isStopped()){
             Socket clientSocket = null;
