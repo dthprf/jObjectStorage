@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class Client {
+public class RemoteClient {
     private String IP;
     private int socket;
 
-    public Client(String IP, int socket) {
+    public RemoteClient(String IP, int socket) {
         this.socket = socket;
         this.IP = IP;
     }
