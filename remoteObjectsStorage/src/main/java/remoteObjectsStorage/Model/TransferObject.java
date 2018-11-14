@@ -10,7 +10,7 @@ public class TransferObject implements Serializable {
         this.key = key;
         this.storedObject = storedObject;
     }
-    
+
     public String getKey() {
         return key;
     }
