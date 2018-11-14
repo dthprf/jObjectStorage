@@ -57,5 +57,20 @@ public class RemoteClient {
 
     }
 
+    public boolean removeObject(String key, Object object) throws IOException, ClassNotFoundException {
+        RequestModel transferObject = new RequestModel(key, object, deleteMethod);
 
+        Socket socket = new Socket(this.IP, this.port);
+
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectOutputStream.writeObject(transferObject);
+
+        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+        Object requested = objectInputStream.readObject();
+        objectInputStream.close();
+        objectOutputStream.close();
+
+        return (boolean) object;
+
+    }
 }
