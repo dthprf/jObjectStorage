@@ -1,80 +1,44 @@
 package remoteObjectsStorage.Client;
 
+import remoteObjectsStorage.Driver.Connection;
 import remoteObjectsStorage.Model.RequestModel;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-
 public class RemoteClient {
-    private String IP;
-    private int port;
+    private final int port;
+    private final String IP;
+
     private final static String getMethod = "GET";
     private final static String putMethod = "PUT";
     private final static String deleteMethod = "DELETE";
 
-
-    public RemoteClient(String IP, int port) {
+    public RemoteClient(String address, int port) {
         this.port = port;
-        this.IP = IP;
+        this.IP = address;
     }
 
-
-    public boolean addObject(String key, Object object) throws IOException, ClassNotFoundException {
+    public boolean addObject(String key, Object object) {
+        Connection connection = new Connection(port, IP);
         RequestModel transferObject = new RequestModel(key, object, putMethod);
+        Object serverResponse = connection.sendRequest(transferObject);
 
-        Socket socket = new Socket(this.IP, this.port);
-
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        objectOutputStream.writeObject(transferObject);
-
-        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-        Object response = objectInputStream.readObject();
-
-        objectOutputStream.flush();
-        objectOutputStream.close();
-        objectInputStream.close();
-
-        return (boolean) response;
+        return (boolean) serverResponse;
     }
 
 
-    public Object getObject(String key) throws IOException, ClassNotFoundException {
+    public Object getObject(String key) {
+        Connection connection = new Connection(port, IP);
         RequestModel transferObject = new RequestModel(key, null, getMethod);
+        Object serverResponse = connection.sendRequest(transferObject);
 
-        Socket socket = new Socket(this.IP, this.port);
-
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        objectOutputStream.writeObject(transferObject);
-        objectOutputStream.flush();
-
-        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-        Object response = objectInputStream.readObject();
-
-        objectInputStream.close();
-        objectOutputStream.close();
-
-        return response;
+        return serverResponse;
 
     }
 
-    public boolean removeObject(String key) throws IOException, ClassNotFoundException {
+    public boolean removeObject(String key) {
+        Connection connection = new Connection(port, IP);
         RequestModel transferObject = new RequestModel(key, null, deleteMethod);
+        Object serverResponse = connection.sendRequest(transferObject);
 
-        Socket socket = new Socket(this.IP, this.port);
-
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        objectOutputStream.writeObject(transferObject);
-        objectOutputStream.flush();
-
-        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-        Object response = objectInputStream.readObject();
-
-        objectInputStream.close();
-        objectOutputStream.close();
-
-        return (boolean) response;
-
+        return (boolean) serverResponse;
     }
 }
