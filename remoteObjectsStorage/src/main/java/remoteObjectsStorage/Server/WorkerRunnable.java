@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Date;
 
 public class WorkerRunnable implements Runnable{
 
@@ -23,7 +24,7 @@ public class WorkerRunnable implements Runnable{
         try {
             InputStream input  = clientSocket.getInputStream();
             OutputStream output = clientSocket.getOutputStream();
-            long time = System.currentTimeMillis();
+            Date date = new Date();
 
             Object object = deserilize(clientSocket);
             RequestModel requestModel;
@@ -35,9 +36,8 @@ public class WorkerRunnable implements Runnable{
 
             output.close();
             input.close();
-            System.out.println("Request processed: " + time);
+            System.out.println("Request processed: " + date);
         } catch (IOException e) {
-            //report exception somewhere.
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
             System.out.println(e.toString() + "\n" + "Only Serializable objects allowed.");

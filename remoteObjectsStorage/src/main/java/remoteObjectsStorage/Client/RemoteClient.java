@@ -59,8 +59,8 @@ public class RemoteClient {
 
     }
 
-    public boolean removeObject(String key, Object object) throws IOException, ClassNotFoundException {
-        RequestModel transferObject = new RequestModel(key, object, deleteMethod);
+    public boolean removeObject(String key) throws IOException, ClassNotFoundException {
+        RequestModel transferObject = new RequestModel(key, null, deleteMethod);
 
         Socket socket = new Socket(this.IP, this.port);
 
