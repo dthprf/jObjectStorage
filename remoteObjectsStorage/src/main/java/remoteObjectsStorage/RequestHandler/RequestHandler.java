@@ -8,7 +8,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class RequestHandler {
-
     private MTServer mtServer;
     private Socket socket;
 
