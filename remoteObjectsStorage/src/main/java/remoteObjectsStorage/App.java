@@ -20,24 +20,10 @@ public class App {
             RemoteClient remoteClient1 = new RemoteClient("192.168.10.55", 8080);
             RemoteClient remoteClient2 = new RemoteClient("192.168.10.55", 8080);
             String string = "POKA POKA";
-
-            try {
-                remoteClient1.addObject("bart", string);
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                System.out.println(remoteClient2.getObject("bart"));
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                System.out.println(remoteClient2.removeObject("bart"));
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+            remoteClient1.addObject("bart", string);
+            System.out.println(remoteClient2.getObject("bart"));
+            System.out.println(remoteClient2.removeObject("bart"));
+            System.out.println(remoteClient2.removeObject("bart"));;
         }
     }
 }
