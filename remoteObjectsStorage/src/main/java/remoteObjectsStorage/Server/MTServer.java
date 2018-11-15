@@ -22,7 +22,7 @@ public class MTServer implements Runnable{
     public void run(){
         openServerSocket();
         while(! isStopped()){
-            Socket clientSocket = null;
+            Socket clientSocket;
             try {
                 clientSocket = this.serverSocket.accept();
             } catch (IOException e) {

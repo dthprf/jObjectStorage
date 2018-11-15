@@ -21,7 +21,7 @@ public class RemoteClient {
     }
 
 
-    public void addObject(String key, Object object) throws IOException, ClassNotFoundException {
+    public boolean addObject(String key, Object object) throws IOException, ClassNotFoundException {
         RequestModel transferObject = new RequestModel(key, object, putMethod);
 
         Socket socket = new Socket(this.IP, this.port);
@@ -30,13 +30,13 @@ public class RemoteClient {
         objectOutputStream.writeObject(transferObject);
 
         ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-        Object requested = objectInputStream.readObject();
-
-        System.out.println((boolean) requested);
+        Object response = objectInputStream.readObject();
 
         objectOutputStream.flush();
         objectOutputStream.close();
         objectInputStream.close();
+
+        return (boolean) response;
     }
 
 
@@ -47,30 +47,34 @@ public class RemoteClient {
 
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectOutputStream.writeObject(transferObject);
+        objectOutputStream.flush();
 
         ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-        Object requested = objectInputStream.readObject();
+        Object response = objectInputStream.readObject();
+
         objectInputStream.close();
         objectOutputStream.close();
 
-        return requested;
+        return response;
 
     }
 
-    public boolean removeObject(String key, Object object) throws IOException, ClassNotFoundException {
-        RequestModel transferObject = new RequestModel(key, object, deleteMethod);
+    public boolean removeObject(String key) throws IOException, ClassNotFoundException {
+        RequestModel transferObject = new RequestModel(key, null, deleteMethod);
 
         Socket socket = new Socket(this.IP, this.port);
 
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectOutputStream.writeObject(transferObject);
+        objectOutputStream.flush();
 
         ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-        Object requested = objectInputStream.readObject();
+        Object response = objectInputStream.readObject();
+
         objectInputStream.close();
         objectOutputStream.close();
 
-        return (boolean) object;
+        return (boolean) response;
 
     }
 }
