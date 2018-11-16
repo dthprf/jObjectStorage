@@ -28,4 +28,10 @@ public class Connection implements IConnection {
         }
     }
 
+    @Override
+    public boolean isConnected() {
+        return clientSocket.isConnected() && !clientSocket.isClosed();
+    }
+
+
 }
