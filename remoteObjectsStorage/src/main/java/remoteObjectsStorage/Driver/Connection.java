@@ -61,4 +61,58 @@ public class Connection implements IConnection {
         }
     }
 
+    @Override
+    public Object proceedRequest(RequestModel request) {
+        Object serverResponse;
+        sendRequest(request);
+        serverResponse = readResponse();
+
+        return serverResponse;
+    }
+
+    private void openInputStream() {
+        try {
+            inputStream = new ObjectInputStream(clientSocket.getInputStream());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendRequest(Serializable requestObject) {
+        openOutputStream();
+
+        try {
+            outputStream.writeObject(requestObject);
+            outputStream.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Object readResponse() {
+        Object response = null;
+        openInputStream();
+
+        try {
+            response = inputStream.readObject();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    private void openOutputStream() {
+        try {
+            outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
