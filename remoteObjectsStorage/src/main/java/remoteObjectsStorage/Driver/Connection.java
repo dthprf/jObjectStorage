@@ -33,5 +33,32 @@ public class Connection implements IConnection {
         return clientSocket.isConnected() && !clientSocket.isClosed();
     }
 
+    @Override
+    public void stopConnection() {
+        if (outputStream != null) {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (clientSocket != null) {
+            try {
+                clientSocket.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
