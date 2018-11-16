@@ -5,36 +5,27 @@ import remoteObjectsStorage.Model.RequestModel;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
-public class Connection {
+public class Connection implements IConnection {
 
-    private final int port;
-    private final String IP;
+    private Socket clientSocket;
+    private ObjectInputStream inputStream;
+    private ObjectOutputStream outputStream;
 
-    public Connection(int port, String IP) {
-        this.port = port;
-        this.IP = IP;
-    }
-
-    public Object sendRequest(RequestModel transferObject) {
-        Object serverResponse = null;
-
+    @Override
+    public void connect(String host, int port) {
         try {
-            Socket socket = new Socket(this.IP, this.port);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectOutputStream.writeObject(transferObject);
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            serverResponse = objectInputStream.readObject();
+            clientSocket = new Socket(host, port);
 
-            objectOutputStream.flush();
-            objectOutputStream.close();
-            objectInputStream.close();
+        } catch (UnknownHostException e) {
+            System.out.println("Incorrect host address: " + host);
 
-        } catch (IOException | java.lang.ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return serverResponse;
     }
+
 }
