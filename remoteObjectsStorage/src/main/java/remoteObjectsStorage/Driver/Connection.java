@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class Connection implements IConnection {
@@ -14,17 +15,23 @@ public class Connection implements IConnection {
     private Socket clientSocket;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+    private IConnectionExceptionHandler exceptionHandler;
+
+    public Connection() {
+        this.exceptionHandler = new RemoteObjectStoreWrapper();
+    }
 
     @Override
     public void connect(String host, int port) {
         try {
             clientSocket = new Socket(host, port);
+            setOutStreamTimeout(1000);
 
         } catch (UnknownHostException e) {
-            System.out.println("Incorrect host address: " + host);
+            this.exceptionHandler.handle(e, "Incorrect host address: " + host);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            this.exceptionHandler.handle(e,"Error while creating socket.");
         }
     }
 
@@ -38,8 +45,9 @@ public class Connection implements IConnection {
         if (outputStream != null) {
             try {
                 outputStream.close();
+
             } catch (IOException e) {
-                e.printStackTrace();
+                this.exceptionHandler.handle(e, "Cannot close output stream.");
             }
         }
 
@@ -47,7 +55,7 @@ public class Connection implements IConnection {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                this.exceptionHandler.handle(e, "Cannot close input stream.");
             }
         }
 
@@ -56,7 +64,7 @@ public class Connection implements IConnection {
                 clientSocket.close();
 
             } catch (IOException e) {
-                e.printStackTrace();
+                this.exceptionHandler.handle(e, "Cannot close socket.");
             }
         }
     }
@@ -75,7 +83,7 @@ public class Connection implements IConnection {
             inputStream = new ObjectInputStream(clientSocket.getInputStream());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            this.exceptionHandler.handle(e, "Cannot open Input stream.");
         }
     }
 
@@ -87,7 +95,7 @@ public class Connection implements IConnection {
             outputStream.flush();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            this.exceptionHandler.handle(e, "Cannot send request to server.");
         }
     }
 
@@ -99,9 +107,10 @@ public class Connection implements IConnection {
             response = inputStream.readObject();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            this.exceptionHandler.handle(e, "Server is not responding.");
+
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            this.exceptionHandler.handle(e, "Cannot read server respond, object damaged.");
         }
 
         return response;
@@ -112,7 +121,7 @@ public class Connection implements IConnection {
             outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            this.exceptionHandler.handle(e, "Cannot open input stream.");;
         }
     }
 }
