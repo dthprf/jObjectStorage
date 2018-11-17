@@ -9,4 +9,5 @@ public interface IConnection {
     void stopConnection() throws IOException;
     Object proceedRequest(RequestModel transferObject) throws IOException, ClassNotFoundException;
     boolean isConnected();
+    void setOutStreamTimeout(int milis);
 }

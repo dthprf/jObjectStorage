@@ -36,6 +36,16 @@ public class Connection implements IConnection {
     }
 
     @Override
+    public void setOutStreamTimeout(int milis) {
+        try {
+            clientSocket.setSoTimeout(milis);
+
+        } catch (SocketException e) {
+            this.exceptionHandler.handle(e, "Client socket unavailable.");
+        }
+    }
+
+    @Override
     public boolean isConnected() {
         return clientSocket.isConnected() && !clientSocket.isClosed();
     }
