@@ -18,7 +18,7 @@ public class Connection implements IConnection {
     private IConnectionExceptionHandler exceptionHandler;
 
     public Connection() {
-        this.exceptionHandler = new RemoteObjectStoreWrapper();
+        this.exceptionHandler = new ROSExceptionWrapper();
     }
 
     @Override
@@ -117,7 +117,7 @@ public class Connection implements IConnection {
             response = inputStream.readObject();
 
         } catch (IOException e) {
-            this.exceptionHandler.handle(e, "Server is not responding.");
+            this.exceptionHandler.handle(e, "Input stream is not responding.");
 
         } catch (ClassNotFoundException e) {
             this.exceptionHandler.handle(e, "Cannot read server respond, object damaged.");
