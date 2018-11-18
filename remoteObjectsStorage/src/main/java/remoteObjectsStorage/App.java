@@ -1,10 +1,9 @@
 package remoteObjectsStorage;
 
 import remoteObjectsStorage.Client.RemoteClient;
-        import remoteObjectsStorage.Server.MTServer;
-
-        import java.io.IOException;
-        import java.util.Scanner;
+import remoteObjectsStorage.Exception.RemoteObjectStoreOperationException;
+import remoteObjectsStorage.Server.MTServer;
+import java.util.Scanner;
 
 public class App {
 
@@ -22,10 +21,19 @@ public class App {
             RemoteClient remoteClient1 = new RemoteClient(local, 8080);
             RemoteClient remoteClient2 = new RemoteClient(local, 8080);
             String string = "POKA POKA";
-            remoteClient1.addObject("bart", string);
-            System.out.println(remoteClient2.getObject("bart"));
-            System.out.println(remoteClient2.removeObject("bart"));
-            System.out.println(remoteClient2.removeObject("bart"));
+
+            try {
+//                remoteClient1.addObject("bart", string);
+                System.out.println(remoteClient2.getObject("bart"));
+//                System.out.println(remoteClient2.getObject("barty"));
+                remoteClient2.removeObject("bart");
+                remoteClient2.removeObject("bart");
+
+            } catch (RemoteObjectStoreOperationException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("DONE");
         }
     }
 }
