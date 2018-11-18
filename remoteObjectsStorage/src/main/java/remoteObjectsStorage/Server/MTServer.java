@@ -1,5 +1,7 @@
 package remoteObjectsStorage.Server;
 
+import remoteObjectsStorage.Constant.StatusCode;
+import remoteObjectsStorage.Model.ResponseModel;
 import remoteObjectsStorage.RequestHandler.RequestHandler;
 
 import java.net.ServerSocket;
@@ -49,34 +51,34 @@ public class MTServer implements Runnable{
         return this.isStopped;
     }
 
-    public synchronized boolean addObject(String key, Object value) {
+    public synchronized ResponseModel addObject(String key, Object value) {
         if(!database.containsKey(key)) {
             this.database.put(key, value);
-            return true;
+            return new ResponseModel(StatusCode.OK.getCode());
         }
 
-        return false;
+        return new ResponseModel(StatusCode.DUPLICATED_KEY.getCode());
     }
 
-    public synchronized Object getObject(String key) {
+    public synchronized ResponseModel getObject(String key) {
 
         Object object = this.database.get(key);
 
         if(object == null) {
-            throw new IllegalArgumentException("There is no object connected to key");
+            return new ResponseModel(StatusCode.KEY_NOT_FOUND.getCode());
         }
-       return object;
+
+        return new ResponseModel(StatusCode.OK.getCode(), object);
     }
 
-    public synchronized boolean removeObject(String key) {
+    public synchronized ResponseModel removeObject(String key) {
         if(this.database.containsKey(key)) {
             this.database.remove(key);
-            return true;
+            return new ResponseModel(StatusCode.OK.getCode());
         }
 
-        return false;
+        return new ResponseModel(StatusCode.KEY_NOT_FOUND.getCode());
     }
-
 
     public synchronized void stop(){
         this.isStopped = true;
