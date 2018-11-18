@@ -1,12 +1,14 @@
 package remoteObjectsStorage.Client;
 
 import remoteObjectsStorage.Constant.MethodType;
-import remoteObjectsStorage.Driver.IConnection;
+import remoteObjectsStorage.Constant.StatusCode;
 import remoteObjectsStorage.Driver.Connection;
+import remoteObjectsStorage.Exception.RemoteObjectStoreOperationException;
 import remoteObjectsStorage.Factory.RequestModelFactory;
 import remoteObjectsStorage.Model.RequestModel;
+import remoteObjectsStorage.Model.ResponseModel;
 
-import java.io.IOException;
+import java.io.Serializable;
 
 public class RemoteClient {
     private String hostAddress;
@@ -21,32 +23,39 @@ public class RemoteClient {
         requestFactory = new RequestModelFactory();
     }
 
-    public boolean addObject(String key, Object object) {
+    public void addObject(String key, Serializable object) throws RemoteObjectStoreOperationException {
         RequestModel request = requestFactory.generateRequestModel(MethodType.PUT_METHOD, key, object);
-        Object serverResponse = communicateServer(request);
-
-        return (boolean) serverResponse;
+        ResponseModel serverResponse = communicateServer(request);
+        checkStatus(serverResponse);
     }
 
-    public Object getObject(String key) {
+    public Object getObject(String key) throws RemoteObjectStoreOperationException {
         RequestModel request = requestFactory.generateRequestModel(MethodType.GET_METHOD, key);
-        Object serverResponse = communicateServer(request);
+        ResponseModel serverResponse = communicateServer(request);
+        checkStatus(serverResponse);
 
-        return serverResponse;
+        return serverResponse.getRequestedObject();
     }
 
-    public boolean removeObject(String key) {
+    public void removeObject(String key) throws RemoteObjectStoreOperationException {
         RequestModel request = requestFactory.generateRequestModel(MethodType.DELETE_METHOD, key);
-        Object serverResponse = communicateServer(request);
-
-        return (boolean) serverResponse;
+        ResponseModel serverResponse = communicateServer(request);
+        checkStatus(serverResponse);
     }
 
-    private Object communicateServer(RequestModel request) {
+    private ResponseModel communicateServer(RequestModel request) {
         clientConnection.connect(this.hostAddress, this.port);
         Object serverResponse = clientConnection.proceedRequest(request);
         clientConnection.stopConnection();
 
-        return serverResponse;
+        return (ResponseModel) serverResponse;
+    }
+
+    private void checkStatus(ResponseModel serverResponse) throws RemoteObjectStoreOperationException {
+
+        if (!serverResponse.getStatus().equals(StatusCode.OK.getCode())) {
+            StatusCode response = StatusCode.valueOf(serverResponse.getStatus());
+            throw new RemoteObjectStoreOperationException(response.getDescription());
+        }
     }
 }
