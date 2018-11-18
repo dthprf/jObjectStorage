@@ -18,7 +18,7 @@ public class Connection implements IConnection {
     private IConnectionExceptionHandler exceptionHandler;
 
     public Connection() {
-        this.exceptionHandler = new RemoteObjectStoreWrapper();
+        this.exceptionHandler = new ROSExceptionWrapper();
     }
 
     @Override
